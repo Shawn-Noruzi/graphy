@@ -17,7 +17,7 @@ const {
 var books = [
   { name: "a", genre: "Fantasy", id: "1", authorId:"1" },
   { name: "b", genre: "Romance", id: "2", authorId: "2"},
-  { name: "c", genre: "Horror", id: "3", authorId: "3" }
+  { name: "c", genre: "Horror", id: "3", authorId: "1" }
 ];
 
 const authors = [
