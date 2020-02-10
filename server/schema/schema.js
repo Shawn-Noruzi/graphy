@@ -18,7 +18,8 @@ const {
   GraphQLSchema,
   GraphQLID,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLError
 } = graphql;
 
 //declare new object type
@@ -33,7 +34,8 @@ const BookType = new GraphQLObjectType({
       type: AuthorType,
       resolve(parent, args) {
         console.log(parent);
-        //return _.find(authors, { id: parent.authorId });
+          //return _.find(authors, { id: parent.authorId });
+          return Author.findById(parent.authorId)
       }
     }
   })
@@ -50,6 +52,7 @@ const AuthorType = new GraphQLObjectType({
       resolve(parent, args) {
         //return any books with an id that matches the authorId given in the 'author' query
         //return _.filter(books, { authorId: parent.id });
+          return Book.find({authorId: parent.id})
       }
     }
   })
@@ -76,6 +79,7 @@ const RootQuery = new GraphQLObjectType({
         //search books array and find the book with the ID
         //books is dummy data -> will be replaced by database later
         //return _.find(books, { id: args.id });
+          return Book.findById(args.id);
       }
     },
     author: {
@@ -90,18 +94,20 @@ const RootQuery = new GraphQLObjectType({
       //when user queries for author(id:"3") -> they get book x,y,z data back.
       resolve(parent, args) {
         //return _.find(authors, { id: args.id });
+          return Author.findById(args.id);
       }
     },
     books: {
       type: new GraphQLList(BookType),
       resolve(parent, args) {
-        //return books;
+          //return books;
+          return Book.find({})
       }
     },
     authors: {
       type: new GraphQLList(AuthorType),
       resolve(parent, args) {
-        return authors;
+          return Author.find({})
       }
     }
   }
@@ -117,20 +123,55 @@ const Mutation = new GraphQLObjectType({
         name: { type: GraphQLString },
         age: { type: GraphQLInt }
       },
-      resolve(parent, args) {
+      async resolve(parent, args) {
         //create local instance of Author object (imported from model)
         let author = new Author({
           name: args.name,
           age: args.age
         });
-        //save to DB
-        return author.save();
+
+        //Async/await
+        try {
+          //save to DB
+          const savedAuthor = await author.save();
+          return savedAuthor;
+        } catch {
+          const error = new GraphQLError(err);
+          return error;
+        }
+      }
+    },
+
+    addBook: {
+      type: BookType,
+      args: {
+        name: { type: GraphQLString },
+        genre: { type: GraphQLString },
+        authorId: { type: GraphQLID }
+      },
+      async resolve(parent, args) {
+        //create local instance of Author object (imported from model)
+        let book = new Book({
+          name: args.name,
+          genre: args.genre,
+          authorId: args.authorId
+        });
+
+        //Async/await
+        try {
+          //save to DB
+          const savedbook = await book.save();
+          return savedbook;
+        } catch {
+          const error = new GraphQLError(err);
+          return error;
+        }
       }
     }
   }
 });
 
 module.exports = new GraphQLSchema({
-    query: RootQuery,
-    mutation: Mutation
+  query: RootQuery,
+  mutation: Mutation
 });
