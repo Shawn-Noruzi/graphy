@@ -1,16 +1,8 @@
 import React from "react";
-import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import {getBooksQuery} from "../queries/queries";
 
-// queries
-const getBooksQuery = gql`
-  {
-    books {
-      name
-      id
-    }
-  }
-`;
+
 
 
 //functional component -> dont need access to state or lifecycle methods here no need for class component.
