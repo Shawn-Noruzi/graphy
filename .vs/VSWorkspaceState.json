@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\client",
+    "\\client\\src"
   ],
-  "SelectedNode": "\\graphqld3_project\\yarn.lock",
+  "SelectedNode": "\\client\\src\\index.css",
   "PreviewInSolutionExplorer": false
 }
