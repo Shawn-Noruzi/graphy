@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback, useState } from 'react';
-import { getAuthorsQuery } from '../queries/queries';
-import { useQuery } from '@apollo/react-hooks';
+import { GET_AUTHORS_QUERY, ADD_BOOK_MUTATION, GET_BOOKS_QUERY} from '../queries/queries';
+import { useQuery,useMutation } from '@apollo/react-hooks';
 
 const getOptions = (loading, error, data) => {
    if (loading) {
@@ -20,12 +20,14 @@ const getOptions = (loading, error, data) => {
 
 const AddBook = () => {
     //grabbing data from graph 
-   const { loading, error, data } = useQuery(getAuthorsQuery);
+   const { loading, error, data } = useQuery(GET_AUTHORS_QUERY);
+
+   const [addBook] = useMutation(ADD_BOOK_MUTATION);
 
    //setting initial state - can be put into an object to reduce code 
    const [name, setName] = useState('');
    const [genre, setGenre] = useState('');
-   const [author, setAuthor] = useState('');
+   const [authorId, setAuthor] = useState('');
 
    //memoization of loading,error,data -> only run if one of these values change 
    const options = useMemo(() => getOptions(loading, error, data), [
@@ -41,9 +43,18 @@ const AddBook = () => {
    const addCB = useCallback(
       e => {
          e.preventDefault();
-         console.log(`name: ${name}, genre: ${genre}, author: ${author}`);
+         addBook({
+            variables: {
+               name,
+               genre,
+               authorId
+            },
+            refetchQueries: [{query:GET_BOOKS_QUERY}]
+         }).then(res => console.log('res: ', res));
+
+         
       },
-      [name, genre, author]
+      [name, genre, authorId]
    );
 
    return (

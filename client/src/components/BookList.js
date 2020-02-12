@@ -1,13 +1,13 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
-import {getBooksQuery} from "../queries/queries";
+import {GET_BOOKS_QUERY} from "../queries/queries";
 
 
 
 
 //functional component -> dont need access to state or lifecycle methods here no need for class component.
 const BookList = () => {
-  const { loading, error, data } = useQuery(getBooksQuery);
+  const { loading, error, data } = useQuery(GET_BOOKS_QUERY);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
